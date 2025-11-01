@@ -29,7 +29,18 @@ const Project = sequelize.define(
       type: DataTypes.ENUM("Not Started", "In Progress", "completed"),
       defaultValue: "Not Started",
     },
+    manager_id: {
+      type: DataTypes.INTEGER,
+      references: {
+        model: "Users",
+        key: "id",
+      },
+      allowNull: false,
+    }
 
-  });
+  },
+{
+  tableName: "Projects",
+});
 
 export default Project

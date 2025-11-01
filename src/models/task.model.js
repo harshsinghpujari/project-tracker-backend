@@ -19,10 +19,18 @@ const Task = sequelize.define(
     },
     assigned_to: {
       type: DataTypes.INTEGER,
+      references: {
+        model:"Users",
+        key:"id",
+      },
       allowNull: false,
     },
     project_id: {
       type: DataTypes.INTEGER,
+      references:{
+        model:"Projects",
+        key:"id",
+      },
       allowNull: false,
     },
     due_date: {

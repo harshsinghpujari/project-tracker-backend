@@ -11,10 +11,18 @@ const TimeLog = sequelize.define(
     },
     task_id: {
       type: DataTypes.INTEGER,
+      references: {
+        model: "Tasks",
+        key: "id",
+      },
       allowNull: false,
     },
     user_id: {
     type: DataTypes.INTEGER,
+    references: {
+      model: "Users",
+      key: "id",
+    },
     allowNull: false,
     },
     date: {
