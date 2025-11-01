@@ -1,9 +1,14 @@
-import sequelize from "./config/dbConnection.js";
+import express from "express"
 
-try {
-  await sequelize.authenticate();
-    console.log('Database connected succesfully');
-} catch (error) {
-    console.error('Database connection failed:', error);
-}
+const app = express();
+
+app.use(express.json());
+
+app.get("/", (req, res) => {
+  res.send("Server is running succesfully!");
+})
+
+export default app;
+
+
 
