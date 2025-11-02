@@ -34,7 +34,7 @@ import { formatUser } from "../utils/formatUser.js";
       // const safeUser = user.get({plain: true})
       // delete safeUser.password;
 
-      safeUser = formatUser(user);
+      const safeUser = formatUser(user);
 
       res.status(201).json(
         {
