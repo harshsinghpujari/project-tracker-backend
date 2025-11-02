@@ -1,6 +1,7 @@
 import { User } from "../models/index.js";
 import bcrypt from "bcryptjs";
 import jwt from 'jsonwebtoken';
+import { formatUser } from "../utils/formatUser.js";
   
   const createUser = async(req, res) => {
     try {
@@ -30,8 +31,11 @@ import jwt from 'jsonwebtoken';
         role: role
       });
 
-      const safeUser = user.get({plain: true})
-      delete safeUser.password;
+      // const safeUser = user.get({plain: true})
+      // delete safeUser.password;
+
+      safeUser = formatUser(user);
+
       res.status(201).json(
         {
         user: safeUser,
@@ -74,8 +78,10 @@ import jwt from 'jsonwebtoken';
 
       const token = jwt.sign({id: user.id, role:user.role},process.env.SECRET_KEY, {expiresIn: '1h'})
 
-      const safeUser = user.get({plain: true})
-      delete safeUser.password;
+      // const safeUser = user.get({plain: true})
+      // delete safeUser.password;
+
+      const safeUser = formatUser(user)
 
       return res.status(200).json({
         token, user: safeUser,message: "User logged in succesfully"
