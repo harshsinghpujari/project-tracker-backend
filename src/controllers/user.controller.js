@@ -1,7 +1,6 @@
 import { User } from "../models/index.js";
 import bcrypt from "bcryptjs";
-
-
+import jwt from 'jsonwebtoken';
   
   const createUser = async(req, res) => {
     try {
@@ -43,7 +42,51 @@ import bcrypt from "bcryptjs";
     }
   }
 
-  export {createUser};
+  const loginUser = async(req, res) => {
+    try {
+      const {email, password} = req.body;
+      
+      if(!email || !password){
+        return res.status(400).json({
+          message: "invalid credentials"
+        })
+      }
+
+      const user = await User.findOne({
+        where: {
+          email: email
+        }
+      });
+
+      if(!user){
+        return res.status(400).json({
+          message: "User not exists"
+        })
+      }
+
+      const auth = await bcrypt.compare(password, user.password);
+
+      if(!auth) {
+        return res.status(401).json({
+          message: "Invalid Credentials"
+        })
+      }
+
+      const token = jwt.sign({id: user.id, role:user.role},process.env.SECRET_KEY, {expiresIn: '1h'})
+
+      const safeUser = user.get({plain: true})
+      delete safeUser.password;
+
+      return res.status(200).json({
+        token, user: safeUser,message: "User logged in succesfully"
+      })
+
+    } catch (error) {
+      res.send("Error while logging in the user")
+    }
+  }
+
+  export {createUser, loginUser};
 
 
 
