@@ -69,21 +69,17 @@ Ownership Scope	Controller Logic (e.g., in updateTask, getAllProject)	After the 
 
 3. 🌐 API Endpoints and Documentation
 
-The base API URL is: http://localhost:5000/api.
-Feature	Endpoint	Method	Access	Security/Logic Implemented
-Auth	/api/users/register	POST	Public	Creates Manager/Employee accounts.
-	/api/users/login	POST	Public	Returns JWT token.
-Projects	/api/projects	POST	Manager	Creates a project (Manager is assigned as owner).
-	/api/projects	GET	Manager	Manager: Sees owned projects. Employee: Denied (Deferred scope feature).
-Tasks	/api/tasks	POST	Manager	Creates task under an owned project.
-	/api/tasks	GET	Manager/Employee	Manager: Sees tasks under owned projects. Employee: Sees only assigned tasks. Includes Pagination & Filtering (?status=Pending&limit=10).
-	/api/tasks/:id	PUT/PATCH	Manager/Employee	Manager: Updates metadata (owner check). Employee: Updates status and progress_percentage (assignment check).
-Time Logs	/api/timelogs	POST	Employee	Logs hours against an assigned task (owner check).
-	/api/timelogs	GET	Manager/Employee	Manager: Sees logs for their projects. Employee: Sees their own logs.
-Reports	/api/reports	GET	Manager	Summarizes Total Hours Logged per Project/Task within the Manager's scope using Sequelize joins and aggregation.
-
-(A Postman Collection link would be added here if hosted externally.)
-
+Feature,Endpoint,Method,Access,Description
+Authentication,/api/users/register,POST,Public,Creates a new user (role: manager or employee).
+,/api/users/login,POST,Public,Authenticates user and returns a JWT token.
+Projects,/api/projects,POST,Manager,Creates a new project (Manager becomes the owner).
+,/api/projects,GET,Manager/Employee,Manager sees owned projects. Employee sees their tasks/logs (Controller logic enforces this).
+Tasks,/api/tasks,POST,Manager,Creates a task under an owned project.
+,/api/tasks?page=1&limit=10,GET,Manager/Employee,Manager sees tasks under owned projects. Employee sees assigned tasks.
+,/api/tasks/:id,PUT/PATCH,Manager/Employee,Manager updates metadata. Employee updates status/progress.
+Time Tracking,/api/timelogs,POST,Employee,Logs work hours against a task assigned to the user.
+,/api/timelogs,GET,Manager/Employee,Manager sees logs for their projects. Employee sees their own logs.
+Reporting,/api/reports,GET,Manager,Summarized total hours per project/task managed by the user.
 4. 📝 Database Design Highlights
 
 All models are defined using Sequelize, enforcing strong relational integrity.
