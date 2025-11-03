@@ -1,8 +1,19 @@
-📂 README: Project & Time Tracking System Backend
-
-This repository contains the backend API system for a Project and Time Tracking application. It is built using Node.js, Express, and Sequelize (ORM) with MySQL/PostgreSQL support.
+🧩 Project & Time Tracking System (Backend)
+A backend system built with Node.js, Express, and Sequelize (MySQL) to manage projects, tasks, and time tracking for managers and employees with JWT-based authentication and role-based access control.
 
 The primary focus of this submission is on secure Role-Based Access Control (RBAC), robust database relationships, and clear RESTful API design.
+
+🚀 Tech Stack
+
+Backend: Node.js, Express.js
+
+ORM: Sequelize
+
+Database: MySQL
+
+Authentication: JWT
+
+Authorization: Role-based (Manager, Employee)
 
 1. 🚀 Setup and Local Run Instructions
 
@@ -19,8 +30,8 @@ Installation Steps
     Clone the Repository:
     Bash
 
-git clone [YOUR_REPOSITORY_URL]
-cd [YOUR_PROJECT_FOLDER_NAME]
+git clone https://github.com/harshsinghpujari/project-tracker-backend/
+cd project-tracker-backend
 
 Install Dependencies:
 Bash
@@ -67,23 +78,22 @@ Security Layer	Implemented via	Enforcement
 Role Restriction	authorizeRole("manager") Middleware (Used for POST/DELETE /tasks and POST/DELETE/PUT /projects)	Denies access if the role is not 'manager' before the controller runs.
 Ownership Scope	Controller Logic (e.g., in updateTask, getAllProject)	After the role is verified, the controller performs a database check to ensure the resource's foreign key (manager_id or assigned_to) matches req.user.id.
 
-3. 🌐 API Endpoints and Documentation
+### 3. 🌐 API Endpoints and Documentation
 
-🧾 API Endpoints Overview
-Method	Endpoint	Description	Access
-POST	/api/users/signup	User registration	Public
-POST	/api/users/login	User login	Public
-POST	/api/projects	Create project	Manager
-GET	/api/projects	Get all projects	Manager/Employee
-POST	/api/tasks	Create task	Manager
-GET	/api/tasks	Get all tasks	Manager/Employee
-PUT	/api/tasks/:id	Update task	Manager/Employee
-DELETE	/api/tasks/:id	Delete task	Manager
-POST	/api/timelogs	Create time log	Employee
-GET	/api/timelogs	Get time logs	Manager/Employee
-PUT	/api/timelogs/:id	Update time log	Manager/Employee
-DELETE	/api/timelogs/:id	Delete time log	Manager
-GET	/api/reports/summary	Generate report	Manager
+The base API URL is: `http://localhost:5000/api`.
+
+| Feature | Endpoint | Method | Access | Security/Logic Implemented |
+| :--- | :--- | :--- | :--- | :--- |
+| **Auth** | `/api/users/register` | `POST` | Public | Creates Manager/Employee accounts. |
+| | `/api/users/login` | `POST` | Public | Returns **JWT token**. |
+| **Projects** | `/api/projects` | `POST` | Manager | Creates a project (Manager is assigned as owner). |
+| | `/api/projects` | `GET` | Manager | **Manager:** Sees owned projects. **Employee:** Denied (Deferred scope feature). |
+| **Tasks** | `/api/tasks` | `POST` | Manager | Creates task under an **owned project**. |
+| | `/api/tasks` | `GET` | Manager/Employee | **Manager:** Sees tasks under owned projects. **Employee:** Sees only assigned tasks. Includes **Pagination & Filtering**. |
+| | `/api/tasks/:id` | `PUT/PATCH` | Manager/Employee | **Manager:** Updates metadata (owner check). **Employee:** Updates `status`/`progress`. |
+| **Time Logs** | `/api/timelogs` | `POST` | Employee | Logs hours against an **assigned task** (owner check). |
+| | `/api/timelogs` | `GET` | Manager/Employee | **Manager:** Sees logs for their projects. **Employee:** Sees their own logs. |
+| **Reports** | `/api/reports` | `GET` | Manager | Summarizes **Total Hours Logged per Project/Task** within the Manager's scope. |
 
 4. 📝 Database Design Highlights
 
