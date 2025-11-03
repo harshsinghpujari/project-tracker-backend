@@ -1,80 +1,105 @@
-📂 Project Submission: Project & Time Tracking System Backend
+📂 README: Project & Time Tracking System Backend
 
-This repository contains the backend API system for a Project and Time Tracking application, built using Node.js, Express, and Sequelize (ORM).
+This repository contains the backend API system for a Project and Time Tracking application. It is built using Node.js, Express, and Sequelize (ORM) with MySQL/PostgreSQL support.
 
-Key Features Implemented
+The primary focus of this submission is on secure Role-Based Access Control (RBAC), robust database relationships, and clear RESTful API design.
 
-    Authentication: Secure user signup and login using JWT (JSON Web Tokens) and bcrypt for password hashing.
+1. 🚀 Setup and Local Run Instructions
 
-    Role-Based Access Control (RBAC): Strict control over all API endpoints based on the Manager and Employee roles.
+Follow these steps to get the project environment operational on your machine.
 
-    Data Scoping: Managers only interact with projects they own; Employees only interact with tasks and time logs assigned to them.
+Prerequisites
 
-    Task Management: Filtering and Pagination implemented for listing tasks.
+    Node.js (v18+) and npm
 
-    Reporting: Summarized analytics for total hours logged per project.
+    MySQL or PostgreSQL database instance running locally.
 
-1. 💻 Setup Instructions
-
-Follow these steps to get the project running locally.
-
-    Prerequisites: Ensure you have Node.js and a MySQL/PostgreSQL database instance installed and running.
+Installation Steps
 
     Clone the Repository:
     Bash
 
 git clone [YOUR_REPOSITORY_URL]
-cd [YOUR_PROJECT_FOLDER]
+cd [YOUR_PROJECT_FOLDER_NAME]
 
 Install Dependencies:
 Bash
 
 npm install
 
-Database Configuration (.env file): Create a file named .env in the root directory and add your database credentials and a secret key:
+Environment Configuration: Create a file named .env in the root directory and configure your database credentials and security keys.
+Bash
 
-PORT=5000
+# Database Configuration (Modify dialect if using PostgreSQL)
 DATABASE_NAME=[YOUR_DB_NAME]
 DATABASE_USERNAME=[YOUR_DB_USER]
 DATABASE_PASSWORD=[YOUR_DB_PASSWORD]
-SECRET_KEY=A_VERY_STRONG_RANDOM_SECRET
 
-Run the Server: The server will connect to the database, automatically synchronize and create all necessary tables (Users, Projects, Tasks, TimeLogs), and start listening on the specified port.
+# Server & Security
+PORT=5000
+SECRET_KEY=A_SECURE_RANDOM_STRING_FOR_JWT
+
+Start the Server: The server will automatically connect to the database and synchronize all models (creating tables) upon startup.
 Bash
 
-    npm start  # Or whatever command you use to run index.js (e.g., node src/index.js)
+    npm start # Or your specific run command (e.g., node src/index.js)
+    # Console output should show: "Database connected successfully" and "Tables synced with database"
 
-2. 🌐 API Documentation & Endpoints
+2. 🛡️ Authentication and Permissions Handling (Key Deliverable)
 
-The base URL for the API is http://localhost:5000/api.
-Feature	Endpoint	Method	Access	Description
-Authentication	/api/users/register	POST	Public	Creates a new user (role: manager or employee).
-	/api/users/login	POST	Public	Authenticates user and returns a JWT token.
-Projects	/api/projects	POST	Manager	Creates a new project (Manager becomes the owner).
-	/api/projects	GET	Manager/Employee	Manager sees owned projects. Employee sees their tasks/logs (Controller logic enforces this).
-Tasks	/api/tasks	POST	Manager	Creates a task under an owned project.
-	/api/tasks?page=1&limit=10	GET	Manager/Employee	Manager sees tasks under owned projects. Employee sees assigned tasks.
-	/api/tasks/:id	PUT/PATCH	Manager/Employee	Manager updates metadata. Employee updates status/progress.
-Time Tracking	/api/timelogs	POST	Employee	Logs work hours against a task assigned to the user.
-	/api/timelogs	GET	Manager/Employee	Manager sees logs for their projects. Employee sees their own logs.
-Reporting	/api/reports	GET	Manager	Summarized total hours per project/task managed by the user.
+The entire application relies on JWT for authentication and a strict Two-Layer Authorization policy.
 
-3. 🛡️ Role-Based Access Control (RBAC) Explanation
+A. Authentication (JWT)
 
-Access control is enforced via a two-layer system:
+    Upon successful login (POST /api/users/login), the server issues a JSON Web Token (JWT) containing the user's id and role.
 
-A. Authentication Layer (Middleware)
+    The verifyToken middleware runs on all protected routes, validating the token and attaching req.user.id and req.user.role to the request object.
 
-    verifyToken Middleware: Runs on every protected route. It validates the JWT token sent in the Authorization: Bearer <token> header.
+B. Role-Based Access Control (RBAC)
 
-    If valid, it extracts the user.id and user.role from the token payload and attaches them to the request object (req.user).
+User Role	Permissions Granted
+Manager	Full CRUD control over their own Projects and Tasks. Full read access to all Time Logs and Reports under their managed projects.
+Employee	Read/Update access to only Tasks assigned to them. Read/Write access to only their own Time Logs.
 
-B. Authorization Layer (Middleware & Controller Logic)
+C. Authorization Logic
 
-    authorizeRole Middleware: Used on endpoints that require a specific role (e.g., POST /projects). It quickly denies access if req.user.role does not match the required role ("manager").
+Security Layer	Implemented via	Enforcement
+Role Restriction	authorizeRole("manager") Middleware (Used for POST/DELETE /tasks and POST/DELETE/PUT /projects)	Denies access if the role is not 'manager' before the controller runs.
+Ownership Scope	Controller Logic (e.g., in updateTask, getAllProject)	After the role is verified, the controller performs a database check to ensure the resource's foreign key (manager_id or assigned_to) matches req.user.id.
 
-    Granular Controller Checks: For all CRUD operations (especially PUT/DELETE and GET), the controller performs a resource ownership check after the user is authenticated:
+3. 🌐 API Endpoints and Documentation
 
-        Manager: Logic checks if the resource's manager_id or project_id matches the req.user.id.
+The base API URL is: http://localhost:5000/api.
+Feature	Endpoint	Method	Access	Security/Logic Implemented
+Auth	/api/users/register	POST	Public	Creates Manager/Employee accounts.
+	/api/users/login	POST	Public	Returns JWT token.
+Projects	/api/projects	POST	Manager	Creates a project (Manager is assigned as owner).
+	/api/projects	GET	Manager	Manager: Sees owned projects. Employee: Denied (Deferred scope feature).
+Tasks	/api/tasks	POST	Manager	Creates task under an owned project.
+	/api/tasks	GET	Manager/Employee	Manager: Sees tasks under owned projects. Employee: Sees only assigned tasks. Includes Pagination & Filtering (?status=Pending&limit=10).
+	/api/tasks/:id	PUT/PATCH	Manager/Employee	Manager: Updates metadata (owner check). Employee: Updates status and progress_percentage (assignment check).
+Time Logs	/api/timelogs	POST	Employee	Logs hours against an assigned task (owner check).
+	/api/timelogs	GET	Manager/Employee	Manager: Sees logs for their projects. Employee: Sees their own logs.
+Reports	/api/reports	GET	Manager	Summarizes Total Hours Logged per Project/Task within the Manager's scope using Sequelize joins and aggregation.
 
-        Employee: Logic checks if the resource's assigned_to or user_id matches the req.user.id.
+(A Postman Collection link would be added here if hosted externally.)
+
+4. 📝 Database Design Highlights
+
+All models are defined using Sequelize, enforcing strong relational integrity.
+
+    User: Contains the critical role ENUM (manager, employee).
+
+    Project: One-to-Many relationship with User (manager_id).
+
+    Task: One-to-Many relationships with Project (project_id) and User (assigned_to).
+
+    TimeLog: One-to-Many relationships with Task (task_id) and User (user_id).
+
+    Foreign Key Constraints: Explicitly defined using the references property to ensure data consistency at the database level.
+
+Step 3: Final Submission
+
+    Replace the placeholder [YOUR_REPOSITORY_URL] with your actual URL.
+
+    Submit the email to Aviral Pathak with the link to this completed GitHub repository.
