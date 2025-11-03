@@ -5,31 +5,62 @@ A backend system built with Node.js, Express, and Sequelize (MySQL) to manage pr
 The primary focus of this submission is on secure Role-Based Access Control (RBAC), robust database relationships, and clear RESTful API design.
 
 ---------------------------------------------------------------------------------------------
-1. 🚀 Setup and Local Run Instructions
+### 1. 🚀 Setup and Local Run Instructions
 
 Follow these steps to get the project environment operational on your machine.
 
-Prerequisites
+#### Prerequisites
 
-    Node.js (v18+) and npm
+* **Node.js** (v18+) and **npm**
+* **MySQL** or **PostgreSQL** database instance running locally.
 
-    MySQL or PostgreSQL database instance running locally.
+#### Installation Steps
 
-Installation Steps
+1.  **Clone the Repository:**
+    ```bash
+    git clone [https://github.com/harshsinghpujari/project-tracker-backend/](https://github.com/harshsinghpujari/project-tracker-backend/)
+    cd project-tracker-backend
+    ```
 
-    Clone the Repository:
-    Bash
+2.  **Install Dependencies:**
+    ```bash
+    npm install
+    ```
 
-git clone https://github.com/harshsinghpujari/project-tracker-backend/
-cd project-tracker-backend
+3.  **Environment Configuration:**
+    This step is crucial for security and connectivity. Create a file named **`.env`** in the root directory. This file stores sensitive information and is ignored by Git.
 
-Install Dependencies:
-Bash
+    **Populate the file with the following required variables, customizing the values:**
 
-npm install
+    | Variable | Purpose | Example Value |
+    | :--- | :--- | :--- |
+    | `PORT` | Local port for the Express server. | `5000` |
+    | `DATABASE_NAME` | Name of your database instance. | `project_tracker_db` |
+    | `DATABASE_USERNAME` | Username for accessing your database. | `root` or `postgres` |
+    | `DATABASE_PASSWORD` | Password for your database user. | `mySecurePassword123` |
+    | `SECRET_KEY` | **Crucial:** A long, random string used to sign (secure) **JWTs**. | `A_VERY_STRONG_RANDOM_SECRET_FOR_TOKEN_SIGNING` |
 
-Environment Configuration: Create a file named .env in the root directory and configure your database credentials and security keys.
-Bash
+    ```bash
+    # .env File Content (Copy and customize these lines)
+
+    # Server Configuration
+    PORT=5000
+
+    # Database Configuration (Modify the dialect accordingly)
+    DATABASE_NAME=[YOUR_DB_NAME]
+    DATABASE_USERNAME=[YOUR_DB_USER]
+    DATABASE_PASSWORD=[YOUR_DB_PASSWORD]
+
+    # JWT Security Key (MUST be long and secret)
+    SECRET_KEY=A_SECURE_RANDOM_STRING_FOR_JWT_SIGNING
+    ```
+
+4.  **Run the Server:**
+    The server will connect to the database, automatically **synchronize and create all necessary tables (Users, Projects, Tasks, TimeLogs)**, and start listening on the specified port.
+
+    ```bash
+    npm start # Or your specific run command (e.g., node src/index.js)
+    ```
 
 # Database Configuration (Modify dialect if using PostgreSQL)
 DATABASE_NAME=[YOUR_DB_NAME]
