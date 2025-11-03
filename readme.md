@@ -56,28 +56,25 @@ Bash
     npm start # Or your specific run command (e.g., node src/index.js)
     # Console output should show: "Database connected successfully" and "Tables synced with database"
 
-2. 🛡️ Authentication and Permissions Handling (Key Deliverable)
+### 2. 🛡️ Authentication and Permissions Handling (Key Deliverable)
 
-The entire application relies on JWT for authentication and a strict Two-Layer Authorization policy.
+The entire application relies on **JWT** for authentication and a strict **Two-Layer Authorization** policy.
 
-A. Authentication (JWT)
+### A. Role-Based Access Control (RBAC) Summary
 
-    Upon successful login (POST /api/users/login), the server issues a JSON Web Token (JWT) containing the user's id and role.
+| User Role | Access Scope and Permissions |
+| :--- | :--- |
+| **Manager** | Full CRUD control over **their own** Projects and Tasks. Full read access to *all* Time Logs and **Reports** under their managed projects. |
+| **Employee**| Read/Update access to **only** Tasks assigned to them. Read/Write access to **only their own** Time Logs. |
 
-    The verifyToken middleware runs on all protected routes, validating the token and attaching req.user.id and req.user.role to the request object.
+### B. Authorization Logic
 
-B. Role-Based Access Control (RBAC)
+Access control is enforced via two distinct security layers:
 
-User Role	Permissions Granted
-Manager	Full CRUD control over their own Projects and Tasks. Full read access to all Time Logs and Reports under their managed projects.
-Employee	Read/Update access to only Tasks assigned to them. Read/Write access to only their own Time Logs.
-
-C. Authorization Logic
-
-Security Layer	Implemented via	Enforcement
-Role Restriction	authorizeRole("manager") Middleware (Used for POST/DELETE /tasks and POST/DELETE/PUT /projects)	Denies access if the role is not 'manager' before the controller runs.
-Ownership Scope	Controller Logic (e.g., in updateTask, getAllProject)	After the role is verified, the controller performs a database check to ensure the resource's foreign key (manager_id or assigned_to) matches req.user.id.
-
+| Security Layer | Implemented via | Enforcement Mechanism |
+| :--- | :--- | :--- |
+| **Layer 1: Role Restriction** | **`authorizeRole` Middleware** (Used for `POST/DELETE` tasks/projects) | Quickly denies access (403 Forbidden) if the authenticated user's role (`req.user.role`) is not in the required list (e.g., `"manager"`). |
+| **Layer 2: Granular Ownership** | **Controller Logic** (e.g., in `updateTask`, `getAllProject`) | After role is verified, the controller performs a **database check** to ensure the resource's Foreign Key (`manager_id` or `assigned_to`) matches the authenticated user's `req.user.id`. This prevents managers from touching another manager's projects. |
 ### 3. 🌐 API Endpoints and Documentation
 
 The base API URL is: `http://localhost:5000/api`.
