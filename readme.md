@@ -1,20 +1,10 @@
 🧩 Project & Time Tracking System (Backend)
+
 A backend system built with Node.js, Express, and Sequelize (MySQL) to manage projects, tasks, and time tracking for managers and employees with JWT-based authentication and role-based access control.
 
 The primary focus of this submission is on secure Role-Based Access Control (RBAC), robust database relationships, and clear RESTful API design.
 
-🚀 Tech Stack
-
-Backend: Node.js, Express.js
-
-ORM: Sequelize
-
-Database: MySQL
-
-Authentication: JWT
-
-Authorization: Role-based (Manager, Employee)
-
+---------------------------------------------------------------------------------------------
 1. 🚀 Setup and Local Run Instructions
 
 Follow these steps to get the project environment operational on your machine.
