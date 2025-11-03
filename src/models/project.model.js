@@ -43,4 +43,4 @@ const Project = sequelize.define(
   tableName: "Projects",
 });
 
-export default Project
+export default Project;
