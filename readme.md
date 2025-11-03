@@ -69,17 +69,21 @@ Ownership Scope	Controller Logic (e.g., in updateTask, getAllProject)	After the 
 
 3. 🌐 API Endpoints and Documentation
 
-Feature,Endpoint,Method,Access,Security/Logic Implemented
-Auth,/api/users/register,POST,Public,Creates Manager/Employee accounts.
-,/api/users/login,POST,Public,Returns JWT token.
-Projects,/api/projects,POST,Manager,Creates a project (Manager is assigned as owner).
-,/api/projects,GET,Manager,Manager: Sees owned projects. Employee: Denied (Deferred scope feature).
-Tasks,/api/tasks,POST,Manager,Creates task under an owned project.
-,/api/tasks,GET,Manager/Employee,Manager: Sees tasks under owned projects. Employee: Sees only assigned tasks. Includes Pagination & Filtering.
-,/api/tasks/:id,PUT/PATCH,Manager/Employee,Manager: Updates metadata (owner check). Employee: Updates status/progress.
-Time Logs,/api/timelogs,POST,Employee,Logs hours against an assigned task (owner check).
-,/api/timelogs,GET,Manager/Employee,Manager: Sees logs for their projects. Employee: Sees their own logs.
-Reports,/api/reports,GET,Manager,Summarizes Total Hours Logged per Project/Task within the Manager's scope.
+🧾 API Endpoints Overview
+Method	Endpoint	Description	Access
+POST	/api/users/signup	User registration	Public
+POST	/api/users/login	User login	Public
+POST	/api/projects	Create project	Manager
+GET	/api/projects	Get all projects	Manager/Employee
+POST	/api/tasks	Create task	Manager
+GET	/api/tasks	Get all tasks	Manager/Employee
+PUT	/api/tasks/:id	Update task	Manager/Employee
+DELETE	/api/tasks/:id	Delete task	Manager
+POST	/api/timelogs	Create time log	Employee
+GET	/api/timelogs	Get time logs	Manager/Employee
+PUT	/api/timelogs/:id	Update time log	Manager/Employee
+DELETE	/api/timelogs/:id	Delete time log	Manager
+GET	/api/reports/summary	Generate report	Manager
 
 4. 📝 Database Design Highlights
 
