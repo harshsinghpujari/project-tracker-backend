@@ -1,10 +1,26 @@
-🧩 Project & Time Tracking System (Backend)
+# 🧩 Project & Time Tracking System (Backend)
 
 A backend system built with Node.js, Express, and Sequelize (MySQL) to manage projects, tasks, and time tracking for managers and employees with JWT-based authentication and role-based access control.
 
 The primary focus of this submission is on secure Role-Based Access Control (RBAC), robust database relationships, and clear RESTful API design.
 
----------------------------------------------------------------------------------------------
+---
+
+## 💻 Tech Stack & Dependencies
+
+| Category | Technology/Library | Purpose |
+| :--- | :--- | :--- |
+| **Backend Framework** | Node.js, Express | Server runtime and minimal web framework. |
+| **Database** | MySQL / PostgreSQL | Relational database (Schema built using Sequelize). |
+| **ORM** | Sequelize | Object-Relational Mapper for handling database interactions, schema definition, and complex joins. |
+| **Security** | JWT (jsonwebtoken) | Token-based authentication for securing API access. |
+| **Hashing** | `bcryptjs` | Secure one-way hashing of user passwords. |
+| **Utilities** | `dotenv` | Secure management of environment variables. |
+
+
+---
+
+
 ### 1. 🚀 Setup and Local Run Instructions
 
 Follow these steps to get the project environment operational on your machine.
@@ -18,7 +34,7 @@ Follow these steps to get the project environment operational on your machine.
 
 1.  **Clone the Repository:**
     ```bash
-    git clone [https://github.com/harshsinghpujari/project-tracker-backend/](https://github.com/harshsinghpujari/project-tracker-backend/)
+    git clone https://github.com/harshsinghpujari/project-tracker-backend/
     cd project-tracker-backend
     ```
 
@@ -62,6 +78,8 @@ Follow these steps to get the project environment operational on your machine.
     npm start # Or your specific run command (e.g., node src/index.js)
     ```
 
+---
+
 
 ### 2. 🛡️ Authentication and Permissions Handling (Key Deliverable)
 
@@ -82,6 +100,11 @@ Access control is enforced via two distinct security layers:
 | :--- | :--- | :--- |
 | **Layer 1: Role Restriction** | **`authorizeRole` Middleware** (Used for `POST/DELETE` tasks/projects) | Quickly denies access (403 Forbidden) if the authenticated user's role (`req.user.role`) is not in the required list (e.g., `"manager"`). |
 | **Layer 2: Granular Ownership** | **Controller Logic** (e.g., in `updateTask`, `getAllProject`) | After role is verified, the controller performs a **database check** to ensure the resource's Foreign Key (`manager_id` or `assigned_to`) matches the authenticated user's `req.user.id`. This prevents managers from touching another manager's projects. |
+
+
+---
+
+
 ### 3. 🌐 API Endpoints and Documentation
 
 The base API URL is: `http://localhost:5000/api`.
@@ -99,17 +122,29 @@ The base API URL is: `http://localhost:5000/api`.
 | | `/api/timelogs` | `GET` | Manager/Employee | **Manager:** Sees logs for their projects. **Employee:** Sees their own logs. |
 | **Reports** | `/api/reports` | `GET` | Manager | Summarizes **Total Hours Logged per Project/Task** within the Manager's scope. |
 
-4. 📝 Database Design Highlights
+
+---
+
+
+### 4. 📝 Database Design Highlights
 
 All models are defined using Sequelize, enforcing strong relational integrity.
 
-    User: Contains the critical role ENUM (manager, employee).
+* **User:** Contains the critical `role` ENUM (`manager`, `employee`).
+* **Project:** One-to-Many relationship with User (`manager_id`).
+* **Task:** One-to-Many relationships with Project (`project_id`) and User (`assigned_to`).
+* **TimeLog:** One-to-Many relationships with Task (`task_id`) and User (`user_id`).
+* **Foreign Key Constraints:** Explicitly defined using the `references` property to ensure data consistency at the database level.
 
-    Project: One-to-Many relationship with User (manager_id).
 
-    Task: One-to-Many relationships with Project (project_id) and User (assigned_to).
+---
 
-    TimeLog: One-to-Many relationships with Task (task_id) and User (user_id).
 
-    Foreign Key Constraints: Explicitly defined using the references property to ensure data consistency at the database level.
+## ✍️ Author
+
+| Name | Role |
+| :--- | :--- |
+| Himanshu Singh | Backend Developer |
+
+***
 
