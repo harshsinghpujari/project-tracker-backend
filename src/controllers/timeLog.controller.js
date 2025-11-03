@@ -1,5 +1,5 @@
 import Task from '../models/task.model.js'
-import TimeLog from '../models/timeLog.model';
+import TimeLog from '../models/timeLog.model.js';
 import Project from '../models/project.model.js'
 import { Op } from 'sequelize';
 

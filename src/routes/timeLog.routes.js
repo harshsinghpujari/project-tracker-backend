@@ -7,16 +7,14 @@ import {
 } from "../controllers/timeLog.controller.js"
 
 import { verifyToken } from "../middlewares/authMiddleware.js";
-import { authorizeRole } from "../middlewares/roleMiddleware.js";
 
-const router = express.Router();
+export const router = express.Router();
 
-router.post("/", verifyToken, authorizeRole, createTimeLog);
+router.post("/", verifyToken, createTimeLog);
 
-router.get("/", verifyToken, authorizeRole, getAllTimelog);
+router.get("/", verifyToken, getAllTimelog);
 
-router.put("/:id", verifyToken, authorizeRole, updateTimeLog);
+router.put("/:id", verifyToken, updateTimeLog);
 
-router.delete("/:id", verifyToken, authorizeRole, deleteTimeLog);
+router.delete("/:id", verifyToken, deleteTimeLog);
 
-export default router;

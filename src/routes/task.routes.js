@@ -1,4 +1,4 @@
-import express from "express"
+import express from "express";
 import {
   createTask, 
   getAllTasks, 
@@ -8,12 +8,9 @@ import {
 import { verifyToken } from "../middlewares/authMiddleware.js"
 import { authorizeRole } from "../middlewares/roleMiddleware.js"
 
-const router = express.Router();
+export const router = express.Router();
 
-router.post('/',verifyToken, authorizeRole, createTask);
-router.get('/',verifyToken, authorizeRole, getAllTasks)
-router.put('/:id',verifyToken, authorizeRole, updateTask);
-router.delete('/:id', verifyToken, authorizeRole, deleteTask)
-
-
-export default router;
+router.post('/',verifyToken, authorizeRole("manager"), createTask);
+router.get('/',verifyToken, getAllTasks)
+router.put('/:id',verifyToken, updateTask);
+router.delete('/:id', verifyToken, authorizeRole("manager"), deleteTask);

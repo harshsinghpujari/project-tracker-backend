@@ -88,7 +88,7 @@ import { formatUser } from "../utils/formatUser.js";
       })
 
     } catch (error) {
-      res.send("Error while logging in the user")
+      res.status(500).json({message: "Error while logging in the user"})
     }
   }
 
