@@ -68,7 +68,7 @@ const createTask = async(req, res) => {
 
 }
 
-const getAllTask = async(req, res) => {
+const getAllTasks = async(req, res) => {
   try {
     let tasks;
 
@@ -222,4 +222,4 @@ try {
   })
 }
 }
-export {createTask, getAllTask, updateTask, deleteTask}
+export {createTask, getAllTasks, updateTask, deleteTask}

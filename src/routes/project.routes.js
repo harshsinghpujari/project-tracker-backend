@@ -6,15 +6,15 @@ import {getAllProject, createProject, updateProject, getProjectById, deleteProje
 
 const router = express.Router()
 
-router.post('/projects',verifyToken,authorizeRole("manager"),createProject);
+router.post('/',verifyToken,authorizeRole("manager"),createProject);
 
-router.get('/projects', verifyToken, getAllProject);
+router.get('/', verifyToken, getAllProject);
 
-router.get('/projects/:id',verifyToken, getProjectById);
+router.get('/:id',verifyToken, getProjectById);
 
-router.put('/projects/:id',verifyToken, authorizeRole("manager"),  updateProject);
+router.put('/:id',verifyToken, authorizeRole("manager"),  updateProject);
 
-router.delete('/projects/:id',verifyToken, authorizeRole("manager"),  deleteProject);
+router.delete('/:id',verifyToken, authorizeRole("manager"),  deleteProject);
 
 
 export {router};
