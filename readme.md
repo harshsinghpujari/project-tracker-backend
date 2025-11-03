@@ -62,20 +62,6 @@ Follow these steps to get the project environment operational on your machine.
     npm start # Or your specific run command (e.g., node src/index.js)
     ```
 
-# Database Configuration (Modify dialect if using PostgreSQL)
-DATABASE_NAME=[YOUR_DB_NAME]
-DATABASE_USERNAME=[YOUR_DB_USER]
-DATABASE_PASSWORD=[YOUR_DB_PASSWORD]
-
-# Server & Security
-PORT=5000
-SECRET_KEY=A_SECURE_RANDOM_STRING_FOR_JWT
-
-Start the Server: The server will automatically connect to the database and synchronize all models (creating tables) upon startup.
-Bash
-
-    npm start # Or your specific run command (e.g., node src/index.js)
-    # Console output should show: "Database connected successfully" and "Tables synced with database"
 
 ### 2. 🛡️ Authentication and Permissions Handling (Key Deliverable)
 
@@ -127,8 +113,3 @@ All models are defined using Sequelize, enforcing strong relational integrity.
 
     Foreign Key Constraints: Explicitly defined using the references property to ensure data consistency at the database level.
 
-Step 3: Final Submission
-
-    Replace the placeholder [YOUR_REPOSITORY_URL] with your actual URL.
-
-    Submit the email to Aviral Pathak with the link to this completed GitHub repository.
