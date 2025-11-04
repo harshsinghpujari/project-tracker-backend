@@ -1,80 +1,150 @@
-📂 Project Submission: Project & Time Tracking System Backend
+# 🧩 Project & Time Tracking System (Backend)
 
-This repository contains the backend API system for a Project and Time Tracking application, built using Node.js, Express, and Sequelize (ORM).
+A backend system built with Node.js, Express, and Sequelize (MySQL) to manage projects, tasks, and time tracking for managers and employees with JWT-based authentication and role-based access control.
 
-Key Features Implemented
+The primary focus of this submission is on secure Role-Based Access Control (RBAC), robust database relationships, and clear RESTful API design.
 
-    Authentication: Secure user signup and login using JWT (JSON Web Tokens) and bcrypt for password hashing.
+---
 
-    Role-Based Access Control (RBAC): Strict control over all API endpoints based on the Manager and Employee roles.
+## 💻 Tech Stack & Dependencies
 
-    Data Scoping: Managers only interact with projects they own; Employees only interact with tasks and time logs assigned to them.
+| Category | Technology/Library | Purpose |
+| :--- | :--- | :--- |
+| **Backend Framework** | Node.js, Express | Server runtime and minimal web framework. |
+| **Database** | MySQL / PostgreSQL | Relational database (Schema built using Sequelize). |
+| **ORM** | Sequelize | Object-Relational Mapper for handling database interactions, schema definition, and complex joins. |
+| **Security** | JWT (jsonwebtoken) | Token-based authentication for securing API access. |
+| **Hashing** | `bcryptjs` | Secure one-way hashing of user passwords. |
+| **Utilities** | `dotenv` | Secure management of environment variables. |
 
-    Task Management: Filtering and Pagination implemented for listing tasks.
 
-    Reporting: Summarized analytics for total hours logged per project.
+---
 
-1. 💻 Setup Instructions
 
-Follow these steps to get the project running locally.
+### 1. 🚀 Setup and Local Run Instructions
 
-    Prerequisites: Ensure you have Node.js and a MySQL/PostgreSQL database instance installed and running.
+Follow these steps to get the project environment operational on your machine.
 
-    Clone the Repository:
-    Bash
+#### Prerequisites
 
-git clone [YOUR_REPOSITORY_URL]
-cd [YOUR_PROJECT_FOLDER]
+* **Node.js** (v18+) and **npm**
+* **MySQL** or **PostgreSQL** database instance running locally.
 
-Install Dependencies:
-Bash
+#### Installation Steps
 
-npm install
+1.  **Clone the Repository:**
+    ```bash
+    git clone https://github.com/harshsinghpujari/project-tracker-backend/
+    cd project-tracker-backend
+    ```
 
-Database Configuration (.env file): Create a file named .env in the root directory and add your database credentials and a secret key:
+2.  **Install Dependencies:**
+    ```bash
+    npm install
+    ```
 
-PORT=5000
-DATABASE_NAME=[YOUR_DB_NAME]
-DATABASE_USERNAME=[YOUR_DB_USER]
-DATABASE_PASSWORD=[YOUR_DB_PASSWORD]
-SECRET_KEY=A_VERY_STRONG_RANDOM_SECRET
+3.  **Environment Configuration:**
+    This step is crucial for security and connectivity. Create a file named **`.env`** in the root directory. This file stores sensitive information and is ignored by Git.
 
-Run the Server: The server will connect to the database, automatically synchronize and create all necessary tables (Users, Projects, Tasks, TimeLogs), and start listening on the specified port.
-Bash
+    **Populate the file with the following required variables, customizing the values:**
 
-    npm start  # Or whatever command you use to run index.js (e.g., node src/index.js)
+    | Variable | Purpose | Example Value |
+    | :--- | :--- | :--- |
+    | `PORT` | Local port for the Express server. | `5000` |
+    | `DATABASE_NAME` | Name of your database instance. | `project_tracker_db` |
+    | `DATABASE_USERNAME` | Username for accessing your database. | `root` or `postgres` |
+    | `DATABASE_PASSWORD` | Password for your database user. | `mySecurePassword123` |
+    | `SECRET_KEY` | **Crucial:** A long, random string used to sign (secure) **JWTs**. | `A_VERY_STRONG_RANDOM_SECRET_FOR_TOKEN_SIGNING` |
 
-2. 🌐 API Documentation & Endpoints
+    ```bash
+    # .env File Content (Copy and customize these lines)
 
-The base URL for the API is http://localhost:5000/api.
-Feature	Endpoint	Method	Access	Description
-Authentication	/api/users/register	POST	Public	Creates a new user (role: manager or employee).
-	/api/users/login	POST	Public	Authenticates user and returns a JWT token.
-Projects	/api/projects	POST	Manager	Creates a new project (Manager becomes the owner).
-	/api/projects	GET	Manager/Employee	Manager sees owned projects. Employee sees their tasks/logs (Controller logic enforces this).
-Tasks	/api/tasks	POST	Manager	Creates a task under an owned project.
-	/api/tasks?page=1&limit=10	GET	Manager/Employee	Manager sees tasks under owned projects. Employee sees assigned tasks.
-	/api/tasks/:id	PUT/PATCH	Manager/Employee	Manager updates metadata. Employee updates status/progress.
-Time Tracking	/api/timelogs	POST	Employee	Logs work hours against a task assigned to the user.
-	/api/timelogs	GET	Manager/Employee	Manager sees logs for their projects. Employee sees their own logs.
-Reporting	/api/reports	GET	Manager	Summarized total hours per project/task managed by the user.
+    # Server Configuration
+    PORT=5000
 
-3. 🛡️ Role-Based Access Control (RBAC) Explanation
+    # Database Configuration (Modify the dialect accordingly)
+    DATABASE_NAME=[YOUR_DB_NAME]
+    DATABASE_USERNAME=[YOUR_DB_USER]
+    DATABASE_PASSWORD=[YOUR_DB_PASSWORD]
 
-Access control is enforced via a two-layer system:
+    # JWT Security Key (MUST be long and secret)
+    SECRET_KEY=A_SECURE_RANDOM_STRING_FOR_JWT_SIGNING
+    ```
 
-A. Authentication Layer (Middleware)
+4.  **Run the Server:**
+    The server will connect to the database, automatically **synchronize and create all necessary tables (Users, Projects, Tasks, TimeLogs)**, and start listening on the specified port.
 
-    verifyToken Middleware: Runs on every protected route. It validates the JWT token sent in the Authorization: Bearer <token> header.
+    ```bash
+    npm start # Or your specific run command (e.g., node src/index.js)
+    ```
 
-    If valid, it extracts the user.id and user.role from the token payload and attaches them to the request object (req.user).
+---
 
-B. Authorization Layer (Middleware & Controller Logic)
 
-    authorizeRole Middleware: Used on endpoints that require a specific role (e.g., POST /projects). It quickly denies access if req.user.role does not match the required role ("manager").
+### 2. 🛡️ Authentication and Permissions Handling (Key Deliverable)
 
-    Granular Controller Checks: For all CRUD operations (especially PUT/DELETE and GET), the controller performs a resource ownership check after the user is authenticated:
+The entire application relies on **JWT** for authentication and a strict **Two-Layer Authorization** policy.
 
-        Manager: Logic checks if the resource's manager_id or project_id matches the req.user.id.
+### A. Role-Based Access Control (RBAC) Summary
 
-        Employee: Logic checks if the resource's assigned_to or user_id matches the req.user.id.
+| User Role | Access Scope and Permissions |
+| :--- | :--- |
+| **Manager** | Full CRUD control over **their own** Projects and Tasks. Full read access to *all* Time Logs and **Reports** under their managed projects. |
+| **Employee**| Read/Update access to **only** Tasks assigned to them. Read/Write access to **only their own** Time Logs. |
+
+### B. Authorization Logic
+
+Access control is enforced via two distinct security layers:
+
+| Security Layer | Implemented via | Enforcement Mechanism |
+| :--- | :--- | :--- |
+| **Layer 1: Role Restriction** | **`authorizeRole` Middleware** (Used for `POST/DELETE` tasks/projects) | Quickly denies access (403 Forbidden) if the authenticated user's role (`req.user.role`) is not in the required list (e.g., `"manager"`). |
+| **Layer 2: Granular Ownership** | **Controller Logic** (e.g., in `updateTask`, `getAllProject`) | After role is verified, the controller performs a **database check** to ensure the resource's Foreign Key (`manager_id` or `assigned_to`) matches the authenticated user's `req.user.id`. This prevents managers from touching another manager's projects. |
+
+
+---
+
+
+### 3. 🌐 API Endpoints and Documentation
+
+The base API URL is: `http://localhost:5000/api`.
+
+| Feature | Endpoint | Method | Access | Security/Logic Implemented |
+| :--- | :--- | :--- | :--- | :--- |
+| **Auth** | `/api/users/register` | `POST` | Public | Creates Manager/Employee accounts. |
+| | `/api/users/login` | `POST` | Public | Returns **JWT token**. |
+| **Projects** | `/api/projects` | `POST` | Manager | Creates a project (Manager is assigned as owner). |
+| | `/api/projects` | `GET` | Manager | **Manager:** Sees owned projects. **Employee:** Denied (Deferred scope feature). |
+| **Tasks** | `/api/tasks` | `POST` | Manager | Creates task under an **owned project**. |
+| | `/api/tasks` | `GET` | Manager/Employee | **Manager:** Sees tasks under owned projects. **Employee:** Sees only assigned tasks. Includes **Pagination & Filtering**. |
+| | `/api/tasks/:id` | `PUT/PATCH` | Manager/Employee | **Manager:** Updates metadata (owner check). **Employee:** Updates `status`/`progress`. |
+| **Time Logs** | `/api/timelogs` | `POST` | Employee | Logs hours against an **assigned task** (owner check). |
+| | `/api/timelogs` | `GET` | Manager/Employee | **Manager:** Sees logs for their projects. **Employee:** Sees their own logs. |
+| **Reports** | `/api/reports` | `GET` | Manager | Summarizes **Total Hours Logged per Project/Task** within the Manager's scope. |
+
+
+---
+
+
+### 4. 📝 Database Design Highlights
+
+All models are defined using Sequelize, enforcing strong relational integrity.
+
+* **User:** Contains the critical `role` ENUM (`manager`, `employee`).
+* **Project:** One-to-Many relationship with User (`manager_id`).
+* **Task:** One-to-Many relationships with Project (`project_id`) and User (`assigned_to`).
+* **TimeLog:** One-to-Many relationships with Task (`task_id`) and User (`user_id`).
+* **Foreign Key Constraints:** Explicitly defined using the `references` property to ensure data consistency at the database level.
+
+
+---
+
+
+## ✍️ Author
+
+| Name | Role |
+| :--- | :--- |
+| Himanshu Singh | Backend Developer |
+
+***
+
